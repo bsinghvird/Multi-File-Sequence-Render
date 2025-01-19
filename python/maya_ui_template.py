@@ -46,6 +46,7 @@ class Window:
     def show(self):
         """Show the window."""
         self.close()
+        
         app = QtWidgets.QApplication.instance()
         self.MainWindow = self.loadUIFile()
         self.MainWindow.setWindowTitle('Mutli File Batch Render')

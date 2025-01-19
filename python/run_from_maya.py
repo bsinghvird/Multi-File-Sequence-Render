@@ -1,4 +1,3 @@
-
 import sys 
 sys.path.insert(0, "E:\code\mayaTools\Multi-File-Batch-Render\python")
 
@@ -13,7 +12,7 @@ reload(multi_file_batch_render)
 reload(render_file)
 
 
-a = multi_file_batch_render.InitialWindow()
+tool = multi_file_batch_render.MultiFrameBatchRender()
 
-a.run()
+tool.run()
 
