@@ -1,5 +1,5 @@
 import sys 
-sys.path.insert(0, "E:\code\mayaTools\Multi-File-Batch-Render\python")
+sys.path.insert(0, "E:\code\mayaTools\Multi-File-Sequence-Render\python")
 
 from importlib import reload
 

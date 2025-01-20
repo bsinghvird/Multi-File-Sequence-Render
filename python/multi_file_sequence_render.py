@@ -50,7 +50,7 @@ class MultiFileSequenceRender:
            
         path = pathlib.Path(__file__).parent.resolve()
         uiFilesPath = os.path.join(path, "..\\ui")
-        self.tool = maya_ui_template.Window(uiFilesPath + '\\MultiFileBatchRenderUi.ui')
+        self.tool = maya_ui_template.Window(uiFilesPath + '\\MultiFileSequenceRenderUi.ui')
         self.tool.show()
         self.set_up_buttons()
         
