@@ -49,7 +49,7 @@ class Window:
         
         app = QtWidgets.QApplication.instance()
         self.MainWindow = self.loadUIFile()
-        self.MainWindow.setWindowTitle('Mutli File Batch Render')
+        self.MainWindow.setWindowTitle('Mutli File Sequence Render')
         self.MainWindow.show()
         app.exec_()
         return app
