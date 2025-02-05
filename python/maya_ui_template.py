@@ -2,7 +2,7 @@
 Maya/QT UI template
 Maya 2023
 """
-
+# https://gist.github.com/gabrieljreed/b116cf246152a0da424fde3b9afcd633
 import maya.cmds as cmds
 import maya.mel as mel
 from maya import OpenMayaUI as omui

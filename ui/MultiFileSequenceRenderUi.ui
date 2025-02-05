@@ -28,6 +28,29 @@
      <height>0</height>
     </size>
    </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+   <column>
+    <property name="text">
+     <string>File Name</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>First Frame</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Last Frame</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>File Path</string>
+    </property>
+   </column>
   </widget>
   <widget class="QPushButton" name="btn_select_files">
    <property name="geometry">
@@ -69,7 +92,7 @@ p, li { white-space: pre-wrap; }
     </rect>
    </property>
    <property name="text">
-    <string>Remove Selected Files</string>
+    <string>Remove Selected File(s)</string>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">

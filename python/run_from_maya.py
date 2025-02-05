@@ -5,7 +5,7 @@ from importlib import reload
 
 import maya_ui_template
 import multi_file_sequence_render
-import render_file as render_file
+import render_file
 
 reload(maya_ui_template)
 reload(multi_file_sequence_render)
