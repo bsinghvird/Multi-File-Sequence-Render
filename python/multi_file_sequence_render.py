@@ -15,19 +15,61 @@ class MultiFileSequenceRender:
     
     table_file_selection = ""
     
+    def get_first_and_last_frame_from_ma_file(self, file_path):
+        
+        first_frame = None
+        last_frame = None
+        
+        filename, file_extension = os.path.splitext(file_path)
+        
+        if (file_extension != '.ma'):
+            return first_frame, last_frame      
+        
+        
+        with open(file_path) as file:
+            render_settings_found = False
+                
+            for line in file:
+                    
+                if ("select -ne :defaultRenderGlobals;" in line):
+                    render_settings_found = True
+                    continue
+                
+                if(render_settings_found):
+                    if 'setAttr \".fs\"' in line:           
+                        first_frame = line.split(" ")[-1].replace(";", "")
+                        
+                    elif 'setAttr \".ef\"' in line:            
+                        last_frame = line.split(" ")[-1].replace(";", "") 
+                                
+                    elif 'setAttr' in line or 'addAttr' in line:
+                        continue
+                    else:
+                        break 
+                        
+        return first_frame, last_frame
+    
     def file_select(self):
-        file_paths = cmds.fileDialog2(fm = 4)
+        file_type_filter = "Maya Files (*.ma *.mb);;Maya ASCII (*.ma);;Maya Binary (*.mb);;"
+        file_paths = cmds.fileDialog2(fileFilter=file_type_filter, dialogStyle=2,fm = 4, caption = "Select File(s)",okc = "Select File(s)")
         print(file_paths)
         
         if file_paths is None:
             return
         
         for file_path in file_paths:
+                        
+            first_frame, last_frame = self.get_first_and_last_frame_from_ma_file(file_path)
+                        
             file = render_file.RenderFile(file_path)
             self.table_file_selection.insertRow(0)
             new_file_name = QtWidgets.QTableWidgetItem(file.file_name)
             new_file_path = QtWidgets.QTableWidgetItem(file.file_path)
+            new_frist_frame = QtWidgets.QTableWidgetItem(first_frame)
+            new_last_frame = QtWidgets.QTableWidgetItem(last_frame)
             self.table_file_selection.setItem(0, 0, new_file_name)
+            self.table_file_selection.setItem(0, 1, new_frist_frame)
+            self.table_file_selection.setItem(0, 2, new_last_frame)
             self.table_file_selection.setItem(0, 3, new_file_path)
     
     def sequence_render_file(self, file_path, first_frame, last_frame, use_custom_frame_range):
