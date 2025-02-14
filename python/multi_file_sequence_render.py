@@ -9,11 +9,20 @@ import pathlib
 import os
 import maya_ui_template
 import render_file
+import maya.app.renderSetup.views.renderSetupPreferences as prefs 
 
 
 class MultiFileSequenceRender:
     
     table_file_selection = ""
+    text_render_settings_file = ""
+    render_setttings_file_path = None
+    # btn_render_settings = None
+    default_render_settings_message = "None (Use render settings saved in each file)"
+    
+    def set_render_settings(self):
+        prefs.loadUserPreset("testRenderSettings")
+    
     
     def get_first_and_last_frame_from_ma_file(self, file_path):
         
@@ -75,6 +84,7 @@ class MultiFileSequenceRender:
     def sequence_render_file(self, file_path, first_frame, last_frame, use_custom_frame_range):
         
         cmds.file(file_path, open = True, force = True)
+        # TODO load render settings
         mel.eval('setMayaSoftwareFrameExt("3", 0)')
         cmds.setAttr('defaultArnoldDriver.ai_translator', 'png', type='string')
         cmds.setAttr("defaultResolution.width", 1280)
@@ -121,6 +131,36 @@ class MultiFileSequenceRender:
 
         for row_index in row_indexes:
             self.table_file_selection.removeRow(row_index)        
+    
+    
+    def render_settings_button(self):
+        
+        if (self.render_setttings_file_path is None):
+            self.import_render_settings_file()
+        else:
+            self.remove_render_settings_file()
+                
+    
+    
+    def remove_render_settings_file(self):
+        self.text_render_settings_file.setText(self.default_render_settings_message)
+        self.render_setttings_file_path = None
+        self.btn_render_settings.setText("Import Render Settings File")
+        
+    
+    def import_render_settings_file(self):
+        
+        file_type_filter = "JSON (*.json);;"
+        file_paths = cmds.fileDialog2(fileFilter=file_type_filter, dialogStyle=2,fm = 1, caption = "Select Render Settings File",okc = "Select Render Settings File")
+        
+        if file_paths is None:
+            return
+         
+        self.render_setttings_file_path = file_paths[0]
+        filename = os.path.basename(self.render_setttings_file_path)
+        self.text_render_settings_file.setText(filename)
+        self.btn_render_settings.setText("Use Render Settings Saved in File")
+        
         
 
     def set_up_buttons(self):
@@ -129,13 +169,16 @@ class MultiFileSequenceRender:
         btn_remove_selected_files = self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_remove_selected_files')
         btn_cancel =  self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_cancel')
         btn_render = self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_render')
+        self.btn_render_settings = self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_render_settings')
         
         btn_select_files.clicked.connect(self.file_select)
         btn_remove_selected_files.clicked.connect(self.remove_selected_files)
         btn_cancel.clicked.connect(self.tool.close)
         btn_render.clicked.connect(self.sequence_render_all_files)
+        self.btn_render_settings.clicked.connect(self.render_settings_button)
         
         self.table_file_selection = self.tool.ui.findChild(QtWidgets.QTableWidget, 'table_file_selection')
+        self.text_render_settings_file = self.tool.ui.findChild(QtWidgets.QTextEdit, 'text_render_settings_file')
 
 
     def run(self):
