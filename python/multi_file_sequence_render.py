@@ -76,10 +76,10 @@ class MultiFileSequenceRender:
             self.table_file_selection.insertRow(0)
             new_file_name = QtWidgets.QTableWidgetItem(file.file_name)
             new_file_path = QtWidgets.QTableWidgetItem(file.file_path)
-            new_frist_frame = QtWidgets.QTableWidgetItem(first_frame)
+            new_first_frame = QtWidgets.QTableWidgetItem(first_frame)
             new_last_frame = QtWidgets.QTableWidgetItem(last_frame)
             self.table_file_selection.setItem(0, 0, new_file_name)
-            self.table_file_selection.setItem(0, 1, new_frist_frame)
+            self.table_file_selection.setItem(0, 1, new_first_frame)
             self.table_file_selection.setItem(0, 2, new_last_frame)
             self.table_file_selection.setItem(0, 3, new_file_path)
     
