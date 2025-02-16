@@ -17,6 +17,8 @@ class MultiFileSequenceRender:
     table_file_selection = ""
     text_render_settings_file = ""
     render_setttings_file_path = None
+    text_save_location = None
+    # save_location = None
     # btn_render_settings = None
     default_render_settings_message = "None (Use render settings saved in each file)"
     
@@ -84,7 +86,11 @@ class MultiFileSequenceRender:
     def sequence_render_file(self, file_path, first_frame, last_frame, use_custom_frame_range):
         
         cmds.file(file_path, open = True, force = True)
-        # TODO load render settings
+        # TODO load render settings, set render save location
+        # cmds.workspace(fileRule=['images',self.text_save_location.getText()])
+        
+        
+        
         mel.eval('setMayaSoftwareFrameExt("3", 0)')
         cmds.setAttr('defaultArnoldDriver.ai_translator', 'png', type='string')
         cmds.setAttr("defaultResolution.width", 1280)
@@ -160,6 +166,16 @@ class MultiFileSequenceRender:
         filename = os.path.basename(self.render_setttings_file_path)
         self.text_render_settings_file.setText(filename)
         self.btn_render_settings.setText("Use Render Settings Saved in File")
+    
+    
+    def select_save_location(self):
+        folder_path = cmds.fileDialog2(dialogStyle=2,fm = 2, caption = "Select Folder",okc = "Select Folder")
+        
+        if folder_path is None:
+            return
+        
+        self.text_save_location.setText(folder_path[0])
+        
         
         
 
@@ -169,16 +185,19 @@ class MultiFileSequenceRender:
         btn_remove_selected_files = self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_remove_selected_files')
         btn_cancel =  self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_cancel')
         btn_render = self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_render')
+        btn_select_save_location = self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_select_save_location')
         self.btn_render_settings = self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_render_settings')
         
         btn_select_files.clicked.connect(self.file_select)
         btn_remove_selected_files.clicked.connect(self.remove_selected_files)
         btn_cancel.clicked.connect(self.tool.close)
         btn_render.clicked.connect(self.sequence_render_all_files)
+        btn_select_save_location.clicked.connect(self.select_save_location)
         self.btn_render_settings.clicked.connect(self.render_settings_button)
         
         self.table_file_selection = self.tool.ui.findChild(QtWidgets.QTableWidget, 'table_file_selection')
         self.text_render_settings_file = self.tool.ui.findChild(QtWidgets.QTextEdit, 'text_render_settings_file')
+        self.text_save_location = self.tool.ui.findChild(QtWidgets.QTextEdit, 'text_save_location')
 
 
     def run(self):
