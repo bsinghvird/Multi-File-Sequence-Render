@@ -18,6 +18,7 @@ class MultiFileSequenceRender:
     text_render_settings_file = ""
     render_setttings_file_path = None
     text_save_location = None
+    label_error_message = None
     # save_location = None
     # btn_render_settings = None
     default_render_settings_message = "None (Use render settings saved in each file)"
@@ -104,25 +105,87 @@ class MultiFileSequenceRender:
             
             
         mel.eval('renderSequence')
-                
-    def sequence_render_all_files(self):
-       
+        
+        
+    def input_is_valid(self):
+        
+        self.label_error_message.clear()
+         
+        input_is_valid = True
+        error_message = "Error:\n"
+        
+        if (self.text_save_location.toPlainText() is None):
+            error_message += "Save Location Not Selected\n"
+            input_is_valid = False
+            
+  
         num_rows = self.table_file_selection.rowCount()
         
         for index in range(num_rows):
-            file_path = self.table_file_selection.item(index, 3).text()
-            first_frame = -1
-            last_frame = -1
-            use_custom_frame_range = False
-            if((self.table_file_selection.item(index, 1) is not None) & (self.table_file_selection.item(index, 2) is not None)):
-                first_frame = self.table_file_selection.item(index, 1).text()
-                last_frame = self.table_file_selection.item(index, 2).text()
-                use_custom_frame_range = True
-                        
-            self.sequence_render_file(file_path, first_frame, last_frame, use_custom_frame_range)
+            display_row_number = index+1
+            first_frame = self.table_file_selection.item(index, 1).text().replace(" ", "")
+            last_frame = self.table_file_selection.item(index, 2).text().replace(" ", "")
+            
+            self.table_file_selection.item(index, 1).setBackground(QtCore.Qt.BrushStyle.NoBrush)
+            self.table_file_selection.item(index, 2).setBackground(QtCore.Qt.BrushStyle.NoBrush)
 
-        for index in range(num_rows):
-            self.table_file_selection.removeRow(0)
+ 
+            if (((first_frame == "")) ^ ((last_frame == ""))):
+                error_message += f"Invalid frame range in row {display_row_number}: both must be filled or empty\n"
+                self.table_file_selection.item(index, 1).setBackground(QtGui.QColor(150,100,100))
+                self.table_file_selection.item(index, 2).setBackground(QtGui.QColor(150,100,100))
+                input_is_valid = False
+            
+            print(type(first_frame))
+            print(first_frame)
+            print(first_frame.isdigit())
+            if(not first_frame.isdigit()):
+                error_message += f"Invalid frame range in row {display_row_number}: first frame is not a number\n"
+                self.table_file_selection.item(index, 1).setBackground(QtGui.QColor(150,100,100))
+                input_is_valid = False
+                
+            if(not last_frame.isdigit()):
+                error_message += f"Invalid frame range in row {display_row_number}: last frame is not a number\n"
+                self.table_file_selection.item(index, 2).setBackground(QtGui.QColor(150,100,100))
+                input_is_valid = False
+            
+            if( (first_frame.isdigit() and last_frame.isdigit()) and (int(first_frame) < int(last_frame))):
+                error_message += f"Invalid frame range in row {display_row_number}: last frame must be after first frame\n"
+                # self.table_file_selection.item(index, 2).setBackground(QtGui.QColor(150,100,100))
+                input_is_valid = False
+            
+                
+            # elif(int(first_frame) < int(last_frame)):
+            #     error_message += f"Invalid frame range in row {index}, last frame must be after first frame\n"
+            
+        
+        if(input_is_valid):
+            return True
+        else:
+            self.label_error_message.setText(error_message)
+            return False   
+                
+    def sequence_render_all_files(self):
+       
+        if (not self.input_is_valid()):
+            return
+       
+        # num_rows = self.table_file_selection.rowCount()
+        
+        # for index in range(num_rows):
+        #     file_path = self.table_file_selection.item(index, 3).text()
+        #     first_frame = -1
+        #     last_frame = -1
+        #     use_custom_frame_range = False
+        #     if((self.table_file_selection.item(index, 1) is not None) & (self.table_file_selection.item(index, 2) is not None)):
+        #         first_frame = self.table_file_selection.item(index, 1).text()
+        #         last_frame = self.table_file_selection.item(index, 2).text()
+        #         use_custom_frame_range = True
+                        
+        #     self.sequence_render_file(file_path, first_frame, last_frame, use_custom_frame_range)
+
+        # for index in range(num_rows):
+        #     self.table_file_selection.removeRow(0)
                 
     
     def remove_selected_files(self):     
@@ -198,6 +261,9 @@ class MultiFileSequenceRender:
         self.table_file_selection = self.tool.ui.findChild(QtWidgets.QTableWidget, 'table_file_selection')
         self.text_render_settings_file = self.tool.ui.findChild(QtWidgets.QTextEdit, 'text_render_settings_file')
         self.text_save_location = self.tool.ui.findChild(QtWidgets.QTextEdit, 'text_save_location')
+        
+        self.label_error_message = self.tool.ui.findChild(QtWidgets.QLabel, "label_error_message")
+        self.label_error_message.clear()
 
 
     def run(self):
