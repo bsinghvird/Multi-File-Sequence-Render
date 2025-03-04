@@ -11,22 +11,15 @@ import maya_ui_template
 import render_file
 import maya.app.renderSetup.views.renderSetupPreferences as prefs 
 
-
 class MultiFileSequenceRender:
     
     table_file_selection = ""
     text_render_settings_file = ""
     render_setttings_file_path = None
     text_save_location = None
-    label_error_message = None
-    # save_location = None
-    # btn_render_settings = None
+    text_info_messages = None
     default_render_settings_message = "None (Use render settings saved in each file)"
-    
-    def set_render_settings(self):
-        prefs.loadUserPreset("testRenderSettings")
-    
-    
+       
     def get_first_and_last_frame_from_ma_file(self, file_path):
         
         first_frame = None
@@ -64,7 +57,6 @@ class MultiFileSequenceRender:
     def file_select(self):
         file_type_filter = "Maya Files (*.ma *.mb);;Maya ASCII (*.ma);;Maya Binary (*.mb);;"
         file_paths = cmds.fileDialog2(fileFilter=file_type_filter, dialogStyle=2,fm = 4, caption = "Select File(s)",okc = "Select File(s)")
-        print(file_paths)
         
         if file_paths is None:
             return
@@ -87,38 +79,41 @@ class MultiFileSequenceRender:
     def sequence_render_file(self, file_path, first_frame, last_frame, use_custom_frame_range):
         
         cmds.file(file_path, open = True, force = True)
-        # TODO load render settings, set render save location
-        # cmds.workspace(fileRule=['images',self.text_save_location.getText()])
         
-        
-        
-        mel.eval('setMayaSoftwareFrameExt("3", 0)')
-        cmds.setAttr('defaultArnoldDriver.ai_translator', 'png', type='string')
-        cmds.setAttr("defaultResolution.width", 1280)
-        cmds.setAttr("defaultResolution.width", 720)
+        if (self.render_setttings_file_path is not None):
 
+            prefs.loadUserPreset(self.render_setttings_file_path.replace(".json", ""))
+        
+        cmds.workspace(fileRule=['images',self.text_save_location.toPlainText()])
+
+        mel.eval('setMayaSoftwareFrameExt("3", 0)')
         
         if (use_custom_frame_range):
         
             cmds.setAttr("defaultRenderGlobals.startFrame", first_frame)
             cmds.setAttr("defaultRenderGlobals.endFrame", last_frame)
             
+        
+        self.text_info_messages.append(f"Starting \"{file_path}\" render\n")
             
         mel.eval('renderSequence')
+        
+        self.text_info_messages.append(f"Finished \"{file_path}\" render\n")
         
         
     def input_is_valid(self):
         
-        self.label_error_message.clear()
          
         input_is_valid = True
         error_message = "Error:\n"
-        
-        if (self.text_save_location.toPlainText() is None):
+
+        self.text_info_messages.clear()
+              
+        if (self.text_save_location.toPlainText() == ""):
             error_message += "Save Location Not Selected\n"
+            # self.text_save_location.setTextBackgroundColor(QtGui.QColor(150,100,100))
             input_is_valid = False
-            
-  
+              
         num_rows = self.table_file_selection.rowCount()
         
         for index in range(num_rows):
@@ -129,40 +124,25 @@ class MultiFileSequenceRender:
             self.table_file_selection.item(index, 1).setBackground(QtCore.Qt.BrushStyle.NoBrush)
             self.table_file_selection.item(index, 2).setBackground(QtCore.Qt.BrushStyle.NoBrush)
 
- 
             if (((first_frame == "")) ^ ((last_frame == ""))):
                 error_message += f"Invalid frame range in row {display_row_number}: both must be filled or empty\n"
                 self.table_file_selection.item(index, 1).setBackground(QtGui.QColor(150,100,100))
                 self.table_file_selection.item(index, 2).setBackground(QtGui.QColor(150,100,100))
                 input_is_valid = False
             
-            print(type(first_frame))
-            print(first_frame)
-            print(first_frame.isdigit())
-            if(not first_frame.isdigit()):
-                error_message += f"Invalid frame range in row {display_row_number}: first frame is not a number\n"
-                self.table_file_selection.item(index, 1).setBackground(QtGui.QColor(150,100,100))
-                input_is_valid = False
-                
-            if(not last_frame.isdigit()):
-                error_message += f"Invalid frame range in row {display_row_number}: last frame is not a number\n"
+            if (((first_frame == "")) and ((last_frame == ""))):
+                continue
+                        
+            if( int(first_frame) > int(last_frame)):
+                error_message += f"Invalid frame range in row {display_row_number}: last frame must be after first frame\n"
                 self.table_file_selection.item(index, 2).setBackground(QtGui.QColor(150,100,100))
                 input_is_valid = False
-            
-            if( (first_frame.isdigit() and last_frame.isdigit()) and (int(first_frame) < int(last_frame))):
-                error_message += f"Invalid frame range in row {display_row_number}: last frame must be after first frame\n"
-                # self.table_file_selection.item(index, 2).setBackground(QtGui.QColor(150,100,100))
-                input_is_valid = False
-            
-                
-            # elif(int(first_frame) < int(last_frame)):
-            #     error_message += f"Invalid frame range in row {index}, last frame must be after first frame\n"
-            
+                      
         
         if(input_is_valid):
             return True
         else:
-            self.label_error_message.setText(error_message)
+            self.text_info_messages.setText(error_message)
             return False   
                 
     def sequence_render_all_files(self):
@@ -170,22 +150,23 @@ class MultiFileSequenceRender:
         if (not self.input_is_valid()):
             return
        
-        # num_rows = self.table_file_selection.rowCount()
+        num_rows = self.table_file_selection.rowCount()
         
-        # for index in range(num_rows):
-        #     file_path = self.table_file_selection.item(index, 3).text()
-        #     first_frame = -1
-        #     last_frame = -1
-        #     use_custom_frame_range = False
-        #     if((self.table_file_selection.item(index, 1) is not None) & (self.table_file_selection.item(index, 2) is not None)):
-        #         first_frame = self.table_file_selection.item(index, 1).text()
-        #         last_frame = self.table_file_selection.item(index, 2).text()
-        #         use_custom_frame_range = True
+        for index in range(num_rows):
+            file_path = self.table_file_selection.item(index, 3).text()
+            first_frame = self.table_file_selection.item(index, 1).text().replace(" ", "")
+            last_frame = self.table_file_selection.item(index, 2).text().replace(" ", "")
+            use_custom_frame_range = False
+            if((first_frame != "") and (last_frame != "")):
+                first_frame = int(first_frame)
+                last_frame = int(last_frame)
+                
+                use_custom_frame_range = True
                         
-        #     self.sequence_render_file(file_path, first_frame, last_frame, use_custom_frame_range)
+            self.sequence_render_file(file_path, first_frame, last_frame, use_custom_frame_range)
 
-        # for index in range(num_rows):
-        #     self.table_file_selection.removeRow(0)
+        for index in range(num_rows):
+            self.table_file_selection.removeRow(0)
                 
     
     def remove_selected_files(self):     
@@ -209,8 +190,6 @@ class MultiFileSequenceRender:
         else:
             self.remove_render_settings_file()
                 
-    
-    
     def remove_render_settings_file(self):
         self.text_render_settings_file.setText(self.default_render_settings_message)
         self.render_setttings_file_path = None
@@ -228,8 +207,8 @@ class MultiFileSequenceRender:
         self.render_setttings_file_path = file_paths[0]
         filename = os.path.basename(self.render_setttings_file_path)
         self.text_render_settings_file.setText(filename)
-        self.btn_render_settings.setText("Use Render Settings Saved in File")
-    
+        self.btn_render_settings.setText("Use Render Settings Saved in Each File")
+        
     
     def select_save_location(self):
         folder_path = cmds.fileDialog2(dialogStyle=2,fm = 2, caption = "Select Folder",okc = "Select Folder")
@@ -239,10 +218,7 @@ class MultiFileSequenceRender:
         
         self.text_save_location.setText(folder_path[0])
         
-        
-        
-
-    def set_up_buttons(self):
+    def set_up_widgets(self):
         
         btn_select_files = self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_select_files')
         btn_remove_selected_files = self.tool.ui.findChild(QtWidgets.QPushButton, 'btn_remove_selected_files')
@@ -259,12 +235,10 @@ class MultiFileSequenceRender:
         self.btn_render_settings.clicked.connect(self.render_settings_button)
         
         self.table_file_selection = self.tool.ui.findChild(QtWidgets.QTableWidget, 'table_file_selection')
+        
         self.text_render_settings_file = self.tool.ui.findChild(QtWidgets.QTextEdit, 'text_render_settings_file')
         self.text_save_location = self.tool.ui.findChild(QtWidgets.QTextEdit, 'text_save_location')
-        
-        self.label_error_message = self.tool.ui.findChild(QtWidgets.QLabel, "label_error_message")
-        self.label_error_message.clear()
-
+        self.text_info_messages = self.tool.ui.findChild(QtWidgets.QTextBrowser, 'text_info_messages')
 
     def run(self):
            
@@ -272,5 +246,5 @@ class MultiFileSequenceRender:
         uiFilesPath = os.path.join(path, "..\\ui")
         self.tool = maya_ui_template.Window(uiFilesPath + '\\MultiFileSequenceRenderUi.ui')
         self.tool.show()
-        self.set_up_buttons()
+        self.set_up_widgets()
         
