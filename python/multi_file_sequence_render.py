@@ -92,8 +92,7 @@ class MultiFileSequenceRender:
         
             cmds.setAttr("defaultRenderGlobals.startFrame", first_frame)
             cmds.setAttr("defaultRenderGlobals.endFrame", last_frame)
-            
-        
+               
         self.text_info_messages.append(f"Starting \"{file_path}\" render\n")
             
         mel.eval('renderSequence')
@@ -102,8 +101,7 @@ class MultiFileSequenceRender:
         
         
     def input_is_valid(self):
-        
-         
+              
         input_is_valid = True
         error_message = "Error:\n"
 
