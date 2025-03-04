@@ -1,3 +1,5 @@
+Welcome to Multi File Sequence Render. A maya tool that lets you select multiple files, set frame ranges, load render settings, and then render out the sequences one after the other. 
+
 There are two ways of running this tool
 
 1. Drag "drag_into_maya.py" into your maya 3D viewport. The tool will then launch
