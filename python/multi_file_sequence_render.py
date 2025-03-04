@@ -7,8 +7,8 @@ from functools import partial # optional, for passing args during signal functio
 import sys
 import pathlib
 import os
-import maya_ui_template
-import render_file
+from python import maya_ui_template
+from python import render_file
 import maya.app.renderSetup.views.renderSetupPreferences as prefs 
 
 class MultiFileSequenceRender:
@@ -245,6 +245,6 @@ class MultiFileSequenceRender:
         path = pathlib.Path(__file__).parent.resolve()
         uiFilesPath = os.path.join(path, "..\\ui")
         self.tool = maya_ui_template.Window(uiFilesPath + '\\MultiFileSequenceRenderUi.ui')
-        self.tool.show()
+        self.tool.show("Multi File Sequence Render")
         self.set_up_widgets()
         

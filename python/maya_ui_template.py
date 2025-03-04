@@ -2,18 +2,12 @@
 Maya/QT UI template
 Maya 2023
 """
+# code for loading a ui file in maya taken from here:
 # https://gist.github.com/gabrieljreed/b116cf246152a0da424fde3b9afcd633
-import maya.cmds as cmds
-import maya.mel as mel
-from maya import OpenMayaUI as omui
-from shiboken2 import wrapInstance
 from PySide2 import QtUiTools, QtCore, QtGui, QtWidgets
-from functools import partial # optional, for passing args during signal function calls
 import sys
-import pathlib
-import os
 
-def getMayaWindow():
+def get_maya_window():
     """Get the Maya main window as a QMainWindow instance."""
     app = QtWidgets.QApplication.instance()
     if not app:
@@ -25,43 +19,37 @@ def getMayaWindow():
 class Window:
     """A window that can be loaded from a Qt .ui file."""
     
-    def __init__(self, filePath):
+    def __init__(self, file_path):
         """Initialize the window."""
-        self.filePath = filePath
-        self.MainWindow = None
-        # self.ui = self.loadUIFile()
+        self.file_path = file_path
+        self.main_window = None
 
-    def loadUIFile(self, parent=None):
+    def load_ui_file(self, parent=None):
         """Load the UI file and return the widget."""
         if parent is None:
-            parent = getMayaWindow()
+            parent = get_maya_window()
         loader = QtUiTools.QUiLoader()
-        uiFile = QtCore.QFile(self.filePath)
+        uiFile = QtCore.QFile(self.file_path)
         uiFile.open(QtCore.QFile.ReadOnly)
         self.ui = loader.load(uiFile, parent)
         
         uiFile.close()    
         return self.ui 
 
-    def show(self):
+    def show(self, window_title):
         """Show the window."""
         self.close()
         
         app = QtWidgets.QApplication.instance()
-        self.MainWindow = self.loadUIFile()
-        self.MainWindow.setWindowTitle('Mutli File Sequence Render')
-        self.MainWindow.show()
+        self.main_window = self.load_ui_file()
+        self.main_window.setWindowTitle(window_title)
+        self.main_window.show()
         app.exec_()
         return app
 
     def close(self):
         """Close the window."""
-        if self.MainWindow is not None:
-            self.MainWindow.close()
-            self.MainWindow = None
+        if self.main_window is not None:
+            self.main_window.close()
+            self.main_window = None
    
-
-# if __name__ == "__main__":
-#     """This is the entry point of the script. Create an instance of the Window class and show it."""
-#     win = Window('E:\\code\\mayaTools\\testTool\\ui\\sampleUi.ui')
-#     win.show()
