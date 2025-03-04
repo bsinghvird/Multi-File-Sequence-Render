@@ -12,8 +12,11 @@ The lower case "r" before the string is necessary to avoid issues with file path
 
 
 Other Info:
+
 To export a render settings file, open up your render settings window then select Presets -> Export Render Settings. This will create a .json file which can then be loaded into the tool. The render settings in the file will then be applied to all files in the sequence. It will not override the frame range though.
 
 Features for the future:
+
 Extra error handling. There is some error handling on the input, but not all edge cases are accounted for yet. As long as you're not intentionally trying to break it or putting in invalid input like letters instead of numbers in the frame range you should be fine.
+
 Force smooth mode toggle. An option to force smooth mode on for all meshes in the files 
