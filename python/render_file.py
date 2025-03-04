@@ -1,6 +1,5 @@
 import maya.cmds as cmds
 
-
 class RenderFile:
     file_path = ""
     file_name = ""

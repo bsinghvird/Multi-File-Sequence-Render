@@ -1,2 +1,4 @@
 
 /python/__pycache__
+*.pyc
+save_to_maya.py

@@ -1,5 +1,5 @@
 import sys 
-sys.path.insert(0, "E:\code\mayaTools\Multi-File-Sequence-Render\python")
+sys.path.insert(0, r"YOUR PATH HERE")
 
 from importlib import reload
 
@@ -10,7 +10,6 @@ import render_file
 reload(maya_ui_template)
 reload(multi_file_sequence_render)
 reload(render_file)
-
 
 tool = multi_file_sequence_render.MultiFileSequenceRender()
 
