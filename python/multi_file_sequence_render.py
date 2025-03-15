@@ -78,27 +78,39 @@ class MultiFileSequenceRender:
     
     def sequence_render_file(self, file_path, first_frame, last_frame, use_custom_frame_range):
         
-        cmds.file(file_path, open = True, force = True)
+        self.text_info_messages.append("----------------------------------------------------\n")
         
-        if (self.render_setttings_file_path is not None):
-
-            prefs.loadUserPreset(self.render_setttings_file_path.replace(".json", ""))
-        
-        cmds.workspace(fileRule=['images',self.text_save_location.toPlainText()])
-
-        mel.eval('setMayaSoftwareFrameExt("3", 0)')
-        
-        if (use_custom_frame_range):
-        
-            cmds.setAttr("defaultRenderGlobals.startFrame", first_frame)
-            cmds.setAttr("defaultRenderGlobals.endFrame", last_frame)
-               
-        self.text_info_messages.append(f"Starting \"{file_path}\" render\n")
+        try:
             
-        mel.eval('renderSequence')
+            self.text_info_messages.append(f"Opening \"{file_path}\"\n")
         
-        self.text_info_messages.append(f"Finished \"{file_path}\" render\n")
+            cmds.file(file_path, open = True, force = True)
+            
+            if (self.render_setttings_file_path is not None):
+
+                self.text_info_messages.append(f"Applying render settings from \"{self.render_setttings_file_path}\"\n")
+                prefs.loadUserPreset(self.render_setttings_file_path.replace(".json", ""))
+            
+            cmds.workspace(fileRule=['images',self.text_save_location.toPlainText()])
+
+            mel.eval('setMayaSoftwareFrameExt("3", 0)')
+            
+            if (use_custom_frame_range):
+            
+                cmds.setAttr("defaultRenderGlobals.startFrame", first_frame)
+                cmds.setAttr("defaultRenderGlobals.endFrame", last_frame)
+                
+            self.text_info_messages.append(f"Starting \"{file_path}\" render\n")
+                
+            mel.eval('renderSequence')
+            
+            self.text_info_messages.append(f"Finished \"{file_path}\" render\n")
         
+        except:
+            
+            self.text_info_messages.append(f"!!!!!!!ERROR!!!!!!! RENDER OF \"{file_path}\" DID NOT COMPLETE !!!!!!!ERROR!!!!!!!\n")
+        
+        self.text_info_messages.append("----------------------------------------------------\n")
         
     def input_is_valid(self):
               
@@ -151,6 +163,9 @@ class MultiFileSequenceRender:
         num_rows = self.table_file_selection.rowCount()
         
         for index in range(num_rows):
+          
+            self.text_info_messages.append(f"File {index+1}/{num_rows}\n")
+            
             file_path = self.table_file_selection.item(index, 3).text()
             first_frame = self.table_file_selection.item(index, 1).text().replace(" ", "")
             last_frame = self.table_file_selection.item(index, 2).text().replace(" ", "")
