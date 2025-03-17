@@ -106,9 +106,10 @@ class MultiFileSequenceRender:
             
             self.text_info_messages.append(f"Finished \"{file_path}\" render\n")
         
-        except:
+        except Exception as e:
             
             self.text_info_messages.append(f"!!!!!!!ERROR!!!!!!! RENDER OF \"{file_path}\" DID NOT COMPLETE !!!!!!!ERROR!!!!!!!\n")
+            self.text_info_messages.append(f"Error: {e}\n")
         
         self.text_info_messages.append("----------------------------------------------------\n")
         
