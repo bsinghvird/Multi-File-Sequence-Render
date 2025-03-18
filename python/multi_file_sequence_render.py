@@ -19,6 +19,7 @@ class MultiFileSequenceRender:
     text_save_location = None
     text_info_messages = None
     default_render_settings_message = "None (Use render settings saved in each file)"
+    checkbox_force_smooth = None
        
     def get_first_and_last_frame_from_ma_file(self, file_path):
         
@@ -76,6 +77,13 @@ class MultiFileSequenceRender:
             self.table_file_selection.setItem(0, 2, new_last_frame)
             self.table_file_selection.setItem(0, 3, new_file_path)
     
+    def smooth_all_geometry(self):
+        cmds.select(allDagObjects = True)
+        all_objects = cmds.ls(selection = True)
+
+        for object in all_objects:
+            cmds.displaySmoothness(object, divisionsU=3, divisionsV=3, pointsWire=16, pointsShaded=4, polygonObject=3)
+    
     def sequence_render_file(self, file_path, first_frame, last_frame, use_custom_frame_range):
         
         self.text_info_messages.append("----------------------------------------------------\n")
@@ -99,6 +107,9 @@ class MultiFileSequenceRender:
             
                 cmds.setAttr("defaultRenderGlobals.startFrame", first_frame)
                 cmds.setAttr("defaultRenderGlobals.endFrame", last_frame)
+                
+            if(self.checkbox_force_smooth.isChecked()):
+                self.smooth_all_geometry()
                 
             self.text_info_messages.append(f"Starting \"{file_path}\" render\n")
                 
@@ -253,6 +264,8 @@ class MultiFileSequenceRender:
         self.text_render_settings_file = self.tool.ui.findChild(QtWidgets.QTextEdit, 'text_render_settings_file')
         self.text_save_location = self.tool.ui.findChild(QtWidgets.QTextEdit, 'text_save_location')
         self.text_info_messages = self.tool.ui.findChild(QtWidgets.QTextBrowser, 'text_info_messages')
+        
+        self.checkbox_force_smooth = self.tool.ui.findChild(QtWidgets.QCheckBox, 'checkbox_force_smooth')
 
     def run(self):
            

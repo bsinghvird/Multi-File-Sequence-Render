@@ -59,6 +59,24 @@
      </column>
     </widget>
    </item>
+   <item row="2" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="btn_select_files">
+       <property name="text">
+        <string>Add File(s)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_remove_selected_files">
+       <property name="text">
+        <string>Remove Selected File(s)</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item row="1" column="0">
     <widget class="QTextBrowser" name="text_instructions">
      <property name="maximumSize">
@@ -79,24 +97,6 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;You can load a render settings file to apply one set of render settings to all your files. To create a render settings file, open the render settings window, select the &amp;quot;presets&amp;quot; tab in the top left, and then click &amp;quot;Export Render Settings.&amp;quot; This will create a json that can be loaded into this tool. This settings file does not contain any frame range data, so it will not override the frame range found in each file. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-   </item>
-   <item row="2" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="btn_select_files">
-       <property name="text">
-        <string>Add File(s)</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_remove_selected_files">
-       <property name="text">
-        <string>Remove Selected File(s)</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </item>
    <item row="3" column="0">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -191,7 +191,7 @@ p, li { white-space: pre-wrap; }
      </item>
     </layout>
    </item>
-   <item row="5" column="0">
+   <item row="6" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QPushButton" name="btn_render">
@@ -209,7 +209,7 @@ p, li { white-space: pre-wrap; }
      </item>
     </layout>
    </item>
-   <item row="6" column="0">
+   <item row="9" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QLabel" name="label_3">
@@ -230,6 +230,19 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="5" column="0">
+    <widget class="QCheckBox" name="checkbox_force_smooth">
+     <property name="text">
+      <string>Force Smooth Mode On All Objects</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <property name="tristate">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
