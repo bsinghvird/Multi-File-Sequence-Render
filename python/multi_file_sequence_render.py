@@ -2,7 +2,11 @@ import maya.cmds as cmds
 import maya.mel as mel
 from maya import OpenMayaUI as omui
 from shiboken2 import wrapInstance
-from PySide2 import QtUiTools, QtCore, QtGui, QtWidgets
+try:
+    from PySide2 import QtUiTools, QtCore, QtGui, QtWidgets
+except:
+    from PySide6 import QtUiTools, QtCore, QtGui, QtWidgets
+    
 from functools import partial # optional, for passing args during signal function calls
 import sys
 import pathlib

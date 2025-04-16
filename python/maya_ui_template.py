@@ -4,7 +4,11 @@ Maya 2023
 """
 # code for loading a ui file in maya taken from here:
 # https://gist.github.com/gabrieljreed/b116cf246152a0da424fde3b9afcd633
-from PySide2 import QtUiTools, QtCore, QtGui, QtWidgets
+try:
+    from PySide2 import QtUiTools, QtCore, QtGui, QtWidgets
+except:
+    from PySide6 import QtUiTools, QtCore, QtGui, QtWidgets
+    
 import sys
 
 def get_maya_window():
